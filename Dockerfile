@@ -10,9 +10,10 @@ ENV \
   PGDATABASE
 
 RUN apt-get update \
-  && DEBIAN_FRONTEND=noninteractive apt-get install -y awscli \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -y python-pip \
   && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/* \
+  && pip install awscli
 
 COPY docker-entrypoint.sh /
 
