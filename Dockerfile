@@ -6,6 +6,7 @@ ENV \
   AWS_S3_BUCKET \
   PGHOST \
   PGUSER \
+  PGPASSWORD \
   PGDATABASE
 
 RUN apt-get update \
