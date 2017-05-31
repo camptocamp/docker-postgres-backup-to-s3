@@ -17,7 +17,14 @@ echo "Total Size of bucket: ${size}"
 
 if [ ! -z "${PUSHGATEWAY_URL}" ]; then
   echo "Sending metrics to ${PUSHGATEWAY_URL}"
-  cat <<EOF | curl --data-binary @- "${PUSHGATEWAY_URL}/metrics/job/postgres_s3_backup/database/${PGDATABASE}"
+
+  if getent hosts rancher-metadata >/dev/null; then
+    instance=$(curl http://rancher-metadata/latest/self/container/name)
+  else
+    instance=$(hostname -f)
+  fi
+
+  cat <<EOF | curl --data-binary @- "${PUSHGATEWAY_URL}/metrics/job/postgres_s3_backup/instance/${instance}/database/${PGDATABASE}"
 # TYPE postgres_s3_backup counter
 postgres_s3_backup{what="pg_dump_status"} ${pg_dump_status}
 postgres_s3_backup{what="aws_status"} ${aws_status}
