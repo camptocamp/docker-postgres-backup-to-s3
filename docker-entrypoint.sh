@@ -25,7 +25,7 @@ if [ ! -z "${PUSHGATEWAY_URL}" ]; then
   fi
 
   cat <<EOF | curl --data-binary @- "${PUSHGATEWAY_URL}/metrics/job/postgres_s3_backup/instance/${instance}/database/${PGDATABASE}"
-# TYPE postgres_s3_backup counter
+# TYPE postgres_s3_backup gauge
 postgres_s3_backup{what="pg_dump_status"} ${pg_dump_status}
 postgres_s3_backup{what="aws_status"} ${aws_status}
 postgres_s3_backup{what="total_objects"} ${objects}
