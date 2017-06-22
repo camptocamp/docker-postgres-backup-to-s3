@@ -25,10 +25,15 @@ if [ ! -z "${PUSHGATEWAY_URL}" ]; then
   fi
 
   cat <<EOF | curl --data-binary @- "${PUSHGATEWAY_URL}/metrics/job/postgres_s3_backup/instance/${instance}/database/${PGDATABASE}"
-# TYPE postgres_s3_backup gauge
-postgres_s3_backup{what="pg_dump_status"} ${pg_dump_status}
-postgres_s3_backup{what="aws_status"} ${aws_status}
-postgres_s3_backup{what="total_objects"} ${objects}
-postgres_s3_backup{what="total_size"} ${size}
+# TYPE postgres_s3_backup_pg_dump_status gauge
+postgres_s3_backup_pg_dump_status ${pg_dump_status}
+# TYPE postgres_s3_backup_aws_status gauge
+postgres_s3_backup_aws_status ${aws_status}
+# TYPE postgres_s3_backup_total_objects gauge
+postgres_s3_backup_total_objects ${objects}
+# TYPE postgres_s3_backup_total_size gauge
+postgres_s3_backup_total_size ${size}
+# TYPE postgres_s3_backup_end_time counter
+postgres_s3_backup_end_time $(date +%s)
 EOF
 fi
