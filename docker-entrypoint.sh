@@ -24,7 +24,7 @@ if [ ! -z "${PUSHGATEWAY_URL}" ]; then
     instance=$(hostname -f)
   fi
 
-  cat <<EOF | curl --data-binary @- "${PUSHGATEWAY_URL}/metrics/job/postgres_s3_backup/instance/${instance}/database/${PGDATABASE}"
+  cat <<EOF | curl -s --data-binary @- "${PUSHGATEWAY_URL}/metrics/job/postgres_s3_backup/instance/${instance}/database/${PGDATABASE}"
 # TYPE postgres_s3_backup_pg_dump_status gauge
 postgres_s3_backup_pg_dump_status ${pg_dump_status}
 # TYPE postgres_s3_backup_aws_status gauge
