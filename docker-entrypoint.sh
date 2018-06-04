@@ -1,8 +1,7 @@
 #!/bin/bash
 
 list_databases() {
-  blacklisted_databases=$(echo "$BLACKLISTED_DATABASES" | sed -e "s/,/'&'/g" -e "s/^/\'/" -e "s/$/'/")
-  databases=$(psql -t -A -c "SELECT datname FROM pg_database WHERE datname not in ($blacklisted_databases)")
+  databases=$(psql -t -A -c "SELECT datname FROM pg_database WHERE datistemplate IS FALSE AND datname !~ ('$BLACKLISTED_DATABASES')")
 }
 
 backup_database() {
