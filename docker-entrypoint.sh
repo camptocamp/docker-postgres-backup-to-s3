@@ -6,14 +6,14 @@ list_databases() {
 
 backup_database() {
   echo "[*] Backuping ${PGDATABASE}"
-  pg_dump -Fc | xz -T 0 --stdout | aws s3 cp - "s3://${AWS_S3_BUCKET}/postgres.${PGDATABASE}.$(date +%Y%m%d-%H%M).dump.xz"
+  pg_dump -Fc -v | xz -T 0 --stdout -v | pv -i 10 -F "%t %r %b" | aws s3 cp - "s3://${AWS_S3_BUCKET}/postgres.${PGDATABASE}.$(date +%Y%m%d-%H%M).dump.xz"
 
   statuses=("${PIPESTATUS[@]}")
   pg_dump_status=${statuses[0]}
   echo "pg_dump exited with status: ${pg_dump_status}"
   xz_status=${statuses[1]}
   echo "xz exited with status: ${xz_status}"
-  aws_status=${statuses[2]}
+  aws_status=${statuses[3]}
   echo "aws exited with status: ${aws_status}"
 
   stats=$(aws s3 ls --summarize --recursive "${AWS_S3_BUCKET}")
