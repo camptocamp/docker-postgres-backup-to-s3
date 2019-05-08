@@ -41,7 +41,7 @@ postgres_s3_backup_aws_status ${aws_status}
 postgres_s3_backup_total_objects ${objects}
 # TYPE postgres_s3_backup_total_size gauge
 postgres_s3_backup_total_size ${size}
-# TYPE postgres_s3_backup_total_size gauge
+# TYPE postgres_s3_backup_last_size gauge
 postgres_s3_backup_last_size ${last_size}
 # TYPE postgres_s3_backup_start_time gauge
 postgres_s3_backup_start_time ${backup_start_time}
