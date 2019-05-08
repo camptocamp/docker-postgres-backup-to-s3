@@ -6,6 +6,7 @@ list_databases() {
 
 backup_database() {
   echo "[*] Backuping ${PGDATABASE}"
+  backup_start_time=$(date +%s)
   pg_dump -Fc | aws s3 cp - "s3://${AWS_S3_BUCKET}/postgres.${PGDATABASE}.$(date +%Y%m%d-%H%M).dump"
   pg_dump -Fc -v | pv -i 10 -F "%t %r %b" | aws s3 cp - "s3://${AWS_S3_BUCKET}/postgres.${PGDATABASE}.$(date +%Y%m%d-%H%M).dump"
 
@@ -40,7 +41,9 @@ postgres_s3_backup_aws_status ${aws_status}
 postgres_s3_backup_total_objects ${objects}
 # TYPE postgres_s3_backup_total_size gauge
 postgres_s3_backup_total_size ${size}
-# TYPE postgres_s3_backup_end_time counter
+# TYPE postgres_s3_backup_start_time gauge
+postgres_s3_backup_start_time ${backup_start_time}
+# TYPE postgres_s3_backup_end_time gauge
 postgres_s3_backup_end_time $(date +%s)
 EOF
 fi
