@@ -7,12 +7,13 @@ list_databases() {
 backup_database() {
   echo "[*] Backuping ${PGDATABASE}"
   backup_start_time=$(date +%s)
-  pg_dump -Fc -v | pv -i 10 -F "%t %r %b" | aws s3 cp - "s3://${AWS_S3_BUCKET}/postgres.${PGDATABASE}.$(date +%Y%m%d-%H%M).dump"
+  pg_dump -Fc -v | pv -i 10 -F "%t %r %b" | tee >(wc -c > /tmp/last_size) | aws s3 cp - "s3://${AWS_S3_BUCKET}/postgres.${PGDATABASE}.$(date +%Y%m%d-%H%M).dump"
 
   statuses=("${PIPESTATUS[@]}")
+  last_size=$(cat /tmp/last_size)
   pg_dump_status=${statuses[0]}
   echo "pg_dump exited with status: ${pg_dump_status}"
-  aws_status=${statuses[2]}
+  aws_status=${statuses[3]}
   echo "aws exited with status: ${aws_status}"
 
   stats=$(aws s3 ls --summarize --recursive "${AWS_S3_BUCKET}")
@@ -40,6 +41,8 @@ postgres_s3_backup_aws_status ${aws_status}
 postgres_s3_backup_total_objects ${objects}
 # TYPE postgres_s3_backup_total_size gauge
 postgres_s3_backup_total_size ${size}
+# TYPE postgres_s3_backup_total_size gauge
+postgres_s3_backup_last_size ${last_size}
 # TYPE postgres_s3_backup_start_time gauge
 postgres_s3_backup_start_time ${backup_start_time}
 # TYPE postgres_s3_backup_end_time gauge
