@@ -7,7 +7,6 @@ list_databases() {
 backup_database() {
   echo "[*] Backuping ${PGDATABASE}"
   backup_start_time=$(date +%s)
-  pg_dump -Fc | aws s3 cp - "s3://${AWS_S3_BUCKET}/postgres.${PGDATABASE}.$(date +%Y%m%d-%H%M).dump"
   pg_dump -Fc -v | pv -i 10 -F "%t %r %b" | aws s3 cp - "s3://${AWS_S3_BUCKET}/postgres.${PGDATABASE}.$(date +%Y%m%d-%H%M).dump"
 
   statuses=("${PIPESTATUS[@]}")
