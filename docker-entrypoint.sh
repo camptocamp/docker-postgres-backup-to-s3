@@ -1,11 +1,17 @@
 #!/bin/bash
 
 list_databases() {
-  databases=$(psql -t -A -c "SELECT datname FROM pg_database WHERE datistemplate IS FALSE AND datname !~ ('$BLACKLISTED_DATABASES')")
+  list_databases_query='SELECT datname FROM pg_database WHERE datistemplate IS FALSE'
+  BLACKLISTED_DATABASES="'""$BLACKLISTED_DATABASES""'"
+  if [ -z "$BLACKLISTED_DATABASES" ]; then
+    databases=$(psql -t -A -c "$list_databases_query")
+  else
+    databases=$(psql -t -A -c "$list_databases_query AND datname !~ ($BLACKLISTED_DATABASES)")
+  fi
 }
 
 backup_database() {
-  echo "[*] Backuping ${PGDATABASE}"
+  echo "[*] Backing up ${PGDATABASE}"
   backup_start_time=$(date +%s)
   pg_dump -Fc -v -d ${PGDATABASE} | pv -i 10 -F "%t %r %b" | tee >(wc -c > /tmp/last_size) | aws s3 cp - "s3://${AWS_S3_BUCKET}/postgres.${PGDATABASE}.$(date +%Y%m%d-%H%M).dump"
 
