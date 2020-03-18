@@ -58,7 +58,7 @@ fi
 }
 
 # the dumps are big (130GB) and S3 limits to 10000 chunks => increase the chunk size
-aws configure set default.s3.multipart_chunksize 32MB
+aws configure set default.s3.multipart_chunksize ${AWS_MULTIPART_CHUNKSIZE:-"32MB"}
 if [ -z "$PGDATABASE" ]; then
   list_databases
   for PGDATABASE in ${databases[@]}; do
