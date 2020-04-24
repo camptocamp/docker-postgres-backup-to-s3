@@ -1,0 +1,50 @@
+---
+version: '2'
+services:
+  postgres:
+    image: camptocamp/postgres:12
+    environment:
+      POSTGRES_PASSWORD: pgpass
+      POSTGRES_USER: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+        #postgres-to-s3:
+        #  image: camptocamp/postgres-backup-to-s3:latest
+        #  build: ./
+        #  environment:
+        #    AWS_ACCESS_KEY_ID: AKIAACCESSKEY
+        #    AWS_SECRET_ACCESS_KEY: SECRETSECRET
+        #    #AWS_DEFAULT_REGION: eu-west-1
+        #    AWS_MULTIPART_CHUNKSIZE: 200MB
+        #    AWS_S3_BUCKET: postgres-to-s3
+        #    BLACKLISTED_DATABASES: .*backup.*|postgres|rdsadmin
+        #    PGHOST: postgres
+        #    PGPASSWORD: pgpass
+        #    PGUSER: postgres
+
+  minio:
+    image: minio/minio
+    #entrypoint: ""
+    #command: sh
+    #tty: true
+    #stdin_open: true
+    command: server /data
+    volumes:
+      - minio:/data
+    ports:
+      - "9000:9000"
+    environment:
+      MINIO_ACCESS_KEY: AKIAACCESSKEY
+      MINIO_SECRET_KEY: SECRETSECRET
+  create-bucket:
+    image: amazon/aws-cli
+    command: --endpoint-url http://minio:9000 s3 mb s3://postgres-to-s3
+    environment:
+      AWS_ACCESS_KEY_ID: AKIAACCESSKEY
+      AWS_SECRET_ACCESS_KEY: SECRETSECRET
+    restart: on-failure
+
+volumes:
+    pgdata:
+    minio:
