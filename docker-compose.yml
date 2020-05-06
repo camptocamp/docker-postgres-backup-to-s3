@@ -24,6 +24,7 @@ services:
         #    PGUSER: postgres
 
   minio:
+    # Limit bandwidth with: tc qdisc add dev br-577ead7e585d root tbf rate 1000kbps latency 50ms burst 2500
     image: minio/minio
     #entrypoint: ""
     #command: sh
