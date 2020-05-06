@@ -2,12 +2,25 @@ from subprocess import Popen, PIPE
 import os
 
 import boto3
+from prometheus_client import start_http_server
+from prometheus_client import Gauge, Counter
 
+# Prometheus exporter configuration
+PROMETHEUS_EXPORTER_PORT = 9352
+start_http_server(PROMETHEUS_EXPORTER_PORT)
+
+bytes_read = Counter('bytes_read', 'Total bytes reads from input')
+bytes_write = Counter('bytes_write', 'Total bytes uploaded to object storage')
+metrics1 = Gauge('walg_basebackup_count',
+                 'Remote Basebackups count')
+metrics1.set(123)
+
+
+# Buffer configuration
 BUFFER_SIZE = 10 * 1024 * 1024
 BUFFER = bytearray(BUFFER_SIZE)
 
-#os.environ["HTTP_PROXY"] = "http://localhost:3128"
-
+# Target configuration
 AWS_ENDPOINT = 'http://localhost:9000'
 AWS_ACCESS_KEY = 'AKIAACCESSKEY'
 AWS_SECRET_KEY = 'SECRETSECRET'
@@ -34,6 +47,7 @@ with Popen(input_cmd.split(), stdout=PIPE, stderr=PIPE) as input:
 
         # Retrieve data from input in the buffer
         bytes_read = input.stdout.readinto(BUFFER)
+
         if bytes_read == 0:
             break
 
