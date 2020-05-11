@@ -33,6 +33,7 @@ class ClientS3:
         print(res)
         self.parts.append({'ETag': res['ETag'], 'PartNumber': self.part_count})
         self.part_count += 1
+        return res
 
     def abort(self):
         res = self.client.abort_multipart_upload(**self.target,
@@ -43,4 +44,4 @@ class ClientS3:
         res = self.client.complete_multipart_upload(**self.target,
                                                     MultipartUpload={'Parts': self.parts},
                                                     UploadId=self.upload_id)
-        print(res)
+        return res
