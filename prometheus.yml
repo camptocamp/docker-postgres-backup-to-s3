@@ -1,12 +1,12 @@
 global:
-  scrape_interval: 2s
-  scrape_timeout: 1s
+  scrape_interval: 5s
+  scrape_timeout: 4s
   evaluation_interval: 1m
 scrape_configs:
 - job_name: pg253
   honor_timestamps: true
-  scrape_interval: 2s
-  scrape_timeout: 1s
+  scrape_interval: 5s
+  scrape_timeout: 4s
   metrics_path: /metrics
   scheme: http
   static_configs:

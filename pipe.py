@@ -9,12 +9,18 @@ from prometheus_client import Gauge, Counter
 PROMETHEUS_EXPORTER_PORT = 9352
 start_http_server(PROMETHEUS_EXPORTER_PORT)
 
-bytes_read = Counter('bytes_read', 'Total bytes reads from input')
-bytes_write = Counter('bytes_write', 'Total bytes uploaded to object storage')
-metrics1 = Gauge('walg_basebackup_count',
-                 'Remote Basebackups count')
-metrics1.set(123)
+total_bytes_read = Counter('total_bytes_read', 'Total bytes reads from input')
+current_bytes_read = Gauge('current_bytes_read', 'Bytes reads from input for current transfer')
+total_bytes_write = Counter('total_bytes_write', 'Total bytes uploaded to object storage')
+current_bytes_write = Gauge('current_bytes_write', 'Bytes uploaded to object storage for current transfer')
+part_count = Gauge('part_count', 'Part of the Multipart upload uploaded')
 
+# Source configuration
+os.environ["PGHOST"] = "postgres"
+os.environ["PGHOST"] = "localhost"
+os.environ["PGDATABASE"] = "postgres"
+os.environ["PGUSER"] = "postgres"
+os.environ["PGPASSWORD"] = "pgpass"
 
 # Buffer configuration
 BUFFER_SIZE = 10 * 1024 * 1024
@@ -36,17 +42,22 @@ client = boto3.client('s3',
 
 multipart_upload = client.create_multipart_upload(**AWS_TARGET)
 
-input_cmd = "cat /home/jacroute/git/github.com/camptocamp/docker-postgres-backup-to-s3/data"
+input_cmd = 'pg_dump -Fc -v -d %s' % os.environ['PGDATABASE']
 
 print("%s --> S3" % input_cmd)
-bytes_written = 0
+current_bytes_read.set(0)
+current_bytes_write.set(0)
+
 with Popen(input_cmd.split(), stdout=PIPE, stderr=PIPE) as input:
     part_number = 1
+    part_count.set(part_number)
     parts = []
     while True:
 
         # Retrieve data from input in the buffer
         bytes_read = input.stdout.readinto(BUFFER)
+        current_bytes_read.inc(bytes_read)
+        total_bytes_read.inc(bytes_read)
 
         if bytes_read == 0:
             break
@@ -55,20 +66,28 @@ with Popen(input_cmd.split(), stdout=PIPE, stderr=PIPE) as input:
         res = client.upload_part(**AWS_TARGET,
                                  UploadId=multipart_upload['UploadId'],
                                  PartNumber=part_number,
-                                 Body=BUFFER if bytes_read == BUFFER_SIZE else BUFFER[0:bytes_read],
-                                 ContentLength=bytes_read)
+                                 Body=BUFFER if bytes_read == BUFFER_SIZE else BUFFER[0:bytes_read])
 
         print(res)
         parts.append({'ETag': res['ETag'], 'PartNumber': part_number})
-        bytes_written += bytes_read
+        current_bytes_write.inc(bytes_read)
+        total_bytes_write.inc(bytes_read)
         print('Write %s bytes' % bytes_read)
 
         part_number += 1
+        part_count.set(part_number)
     if input.poll() is not None:
-        res = client.complete_multipart_upload(**AWS_TARGET,
-                                               MultipartUpload={'Parts': parts},
-                                               UploadId=multipart_upload['UploadId'])
+        if current_bytes_write._value.get() == 0 or input.returncode != 0:
+            client.abort_multipart_upload(**AWS_TARGET,
+                                          UploadId=multipart_upload['UploadId'])
+            raise Exception('Error: no data transfered or error on pg_dump: %s' % input.stderr.read())
+        else:
+            res = client.complete_multipart_upload(**AWS_TARGET,
+                                                   MultipartUpload={'Parts': parts},
+                                                   UploadId=multipart_upload['UploadId'])
         print(res)
-        print("%s bytes written" % bytes_written)
+        print("%s bytes written" % current_bytes_write._value.get())
+    else:
+        raise Exception("Read of input finished but process is not finished, should not happen")
 
 print("Done")

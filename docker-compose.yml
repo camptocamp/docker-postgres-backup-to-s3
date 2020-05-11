@@ -42,12 +42,6 @@ services:
     environment:
       MINIO_ACCESS_KEY: AKIAACCESSKEY
       MINIO_SECRET_KEY: SECRETSECRET
-  prometheus:
-    image: prom/prometheus
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    ports:
-      - "9090:9090"
   create-bucket:
     image: amazon/aws-cli
     command: --endpoint-url http://minio:9000 s3 mb s3://postgres-to-s3
@@ -56,6 +50,22 @@ services:
       AWS_SECRET_ACCESS_KEY: SECRETSECRET
     restart: on-failure
 
+  # Observability
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus:/prometheus
+    ports:
+      - "9090:9090"
+  grafana:
+    image: grafana/grafana:6.7.3
+    volumes:
+      - ./grafana-data/:/var/lib/grafana
+    ports:
+      - "3000:3000"
+
 volumes:
     pgdata:
     minio:
+    prometheus:
