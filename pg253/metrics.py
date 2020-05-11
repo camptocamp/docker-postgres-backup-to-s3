@@ -38,10 +38,12 @@ class Metrics:
 
     def incrementRead(self, count):
         self.current_bytes_read.inc(count)
+        self.current_read += count
         self.total_bytes_read.inc(count)
 
     def incrementWrite(self, count):
         self.current_bytes_write.inc(count)
+        self.current_write += count
         self.total_bytes_write.inc(count)
 
     def setPart(self, count):
