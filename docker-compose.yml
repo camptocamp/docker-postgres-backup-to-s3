@@ -3,9 +3,13 @@ version: '2'
 services:
   postgres:
     image: camptocamp/postgres:12
+    # synchronous_commit = off, fsync = off
+    command: -c 'synchronous_commit=off' -c 'fsync=off'
     environment:
       POSTGRES_PASSWORD: pgpass
       POSTGRES_USER: postgres
+    ports:
+      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
