@@ -147,21 +147,21 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "python_gc_collections_total",
+          "expr": "sum(rate(python_gc_collections_total[1m]))",
           "interval": "",
-          "legendFormat": "collections {{generation}}",
+          "legendFormat": "collections",
           "refId": "A"
         },
         {
-          "expr": "python_gc_objects_collected_total",
+          "expr": "sum(rate(python_gc_objects_collected_total[1m]))",
           "interval": "",
-          "legendFormat": "collected {{generation}}",
+          "legendFormat": "collected per second",
           "refId": "B"
         },
         {
-          "expr": "python_gc_objects_uncollectable_total",
+          "expr": "sum(python_gc_objects_uncollectable_total)",
           "interval": "",
-          "legendFormat": "uncollectable {{generation}}",
+          "legendFormat": "uncollectable",
           "refId": "C"
         }
       ],
@@ -1029,7 +1029,7 @@
       }
     }
   ],
-  "refresh": false,
+  "refresh": "1m",
   "schemaVersion": 22,
   "style": "dark",
   "tags": [],
@@ -1037,8 +1037,8 @@
     "list": []
   },
   "time": {
-    "from": "2020-05-07T07:38:24.648Z",
-    "to": "2020-05-07T10:16:53.370Z"
+    "from": "now-15m",
+    "to": "now"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -1060,5 +1060,5 @@
   "variables": {
     "list": []
   },
-  "version": 12
+  "version": 13
 }
