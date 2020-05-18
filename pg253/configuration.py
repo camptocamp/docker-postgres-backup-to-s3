@@ -3,6 +3,10 @@ import os
 
 class Configuration:
 
+    # Scheduling
+    # ----------
+    SCHEDULE = 'SCHEDULE'
+
     # Source configuration
     # --------------------
     PGHOST = 'PGHOST'
@@ -29,6 +33,7 @@ class Configuration:
 
     def __init__(self):
         # Default value
+        self._setupDefault(Configuration.SCHEDULE, '20 2 * * *')
         self._setupDefault(Configuration.PROMETHEUS_EXPORTER_PORT, 9352)
         self._setupDefault(Configuration.BUFFER_SIZE, 10 * 1024 * 1024)  # 10MB
 
