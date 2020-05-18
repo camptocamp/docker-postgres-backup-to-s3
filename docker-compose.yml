@@ -1,6 +1,19 @@
 ---
 version: '2'
 services:
+  postgres-to-s3:
+    image: camptocamp/postgres-backup-to-s3:latest
+    build: ./
+    environment:
+      AWS_ACCESS_KEY_ID: AKIAACCESSKEY
+      AWS_SECRET_ACCESS_KEY: SECRETSECRET
+      #AWS_DEFAULT_REGION: eu-west-1
+      AWS_S3_BUCKET: postgres-to-s3
+      BLACKLISTED_DATABASES: .*backup.*|postgres|rdsadmin
+      PGHOST: postgres
+      PGPASSWORD: pgpass
+      PGUSER: postgres
+
   postgres:
     image: camptocamp/postgres:12
     # synchronous_commit = off, fsync = off
@@ -13,19 +26,6 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
-        #postgres-to-s3:
-        #  image: camptocamp/postgres-backup-to-s3:latest
-        #  build: ./
-        #  environment:
-        #    AWS_ACCESS_KEY_ID: AKIAACCESSKEY
-        #    AWS_SECRET_ACCESS_KEY: SECRETSECRET
-        #    #AWS_DEFAULT_REGION: eu-west-1
-        #    AWS_MULTIPART_CHUNKSIZE: 200MB
-        #    AWS_S3_BUCKET: postgres-to-s3
-        #    BLACKLISTED_DATABASES: .*backup.*|postgres|rdsadmin
-        #    PGHOST: postgres
-        #    PGPASSWORD: pgpass
-        #    PGUSER: postgres
 
   minio:
     # Limit bandwidth with: tc qdisc add dev br-577ead7e585d root tbf rate 1000kbps latency 50ms burst 2500
