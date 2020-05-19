@@ -11,9 +11,9 @@ setup(
     packages=find_packages(),
     author="Julien Acroute",
     author_email="julien.acroute@camptocamp.com",
-    entry_points = {
+    entry_points={
         'console_scripts': [
-            'backup = pg253.pg253:main',
+            'pg253 = main:main',
         ],
     },
     license="Apache 2",

@@ -17,14 +17,13 @@ def main():
 
     # Start scheduler
     scheduler = BlockingScheduler()
-    scheduler.add_executor('processpool')
     scheduler.add_job(cluster.backup,
                       CronTrigger.from_crontab(os.environ[Configuration.SCHEDULE]))
+    #scheduler.add_job(cluster.backup, 'interval', seconds=3)
     try:
         scheduler.start()
     except (KeyboardInterrupt, SystemExit):
         pass
-
 
 
 if __name__ == '__main__':
