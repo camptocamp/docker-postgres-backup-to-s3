@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from subprocess import run
 
 from pg253.transfer import Transfer
@@ -23,7 +24,11 @@ class Cluster:
 
     def backup(self):
         for database in self.listDatabase():
+            backup_start = datetime.now()
             print("Begin backup of '%s' database" % database)
             transfer = Transfer(self.config, database, self.metrics)
             transfer.run()
+            backup_end = datetime.now()
+            self.metrics.setLastBackup(database, backup_end)
+            self.metrics.setBackupDuration(database, backup_end.timestamp() - backup_start.timestamp())
             print('End backup of %s' % database)
