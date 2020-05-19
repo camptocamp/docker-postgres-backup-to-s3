@@ -16,8 +16,338 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
+  "iteration": 1589902933326,
   "links": [],
   "panels": [
+    {
+      "columns": [],
+      "datasource": null,
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 27,
+      "pageSize": null,
+      "showHeader": true,
+      "sort": {
+        "col": 0,
+        "desc": true
+      },
+      "styles": [
+        {
+          "alias": "Time",
+          "align": "auto",
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "pattern": "database",
+          "type": "string"
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "Value",
+          "thresholds": [],
+          "type": "number",
+          "unit": "dateTimeFromNow"
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "/.*/",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "expr": "first_backup{database=~\"$database\"} * 1000",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "First backup",
+      "transform": "table",
+      "type": "table"
+    },
+    {
+      "columns": [],
+      "datasource": null,
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 26,
+      "pageSize": null,
+      "showHeader": true,
+      "sort": {
+        "col": 0,
+        "desc": true
+      },
+      "styles": [
+        {
+          "alias": "Time",
+          "align": "auto",
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "pattern": "database",
+          "type": "string"
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "Value",
+          "thresholds": [],
+          "type": "number",
+          "unit": "dateTimeFromNow"
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "/.*/",
+          "thresholds": [],
+          "type": "hidden",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "expr": "last_backup{database=~\"$database\"} * 1000",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Last backup",
+      "transform": "table",
+      "type": "table"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "hiddenSeries": false,
+      "id": 24,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "backup_duration{database=~\"$database\"}",
+          "interval": "",
+          "legendFormat": "{{database}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Backup Duration",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "s",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "hiddenSeries": false,
+      "id": 29,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": false,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "backups{database=~\"$database\"} * 1000",
+          "interval": "",
+          "legendFormat": "{{database}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "All backups",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "dateTimeAsIso",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
     {
       "aliasColors": {},
       "bars": false,
@@ -30,7 +360,7 @@
         "h": 8,
         "w": 9,
         "x": 0,
-        "y": 0
+        "y": 16
       },
       "hiddenSeries": false,
       "id": 12,
@@ -118,7 +448,7 @@
         "h": 8,
         "w": 8,
         "x": 9,
-        "y": 0
+        "y": 16
       },
       "hiddenSeries": false,
       "id": 20,
@@ -218,7 +548,7 @@
         "h": 8,
         "w": 7,
         "x": 17,
-        "y": 0
+        "y": 16
       },
       "hiddenSeries": false,
       "id": 18,
@@ -306,7 +636,7 @@
         "h": 8,
         "w": 9,
         "x": 0,
-        "y": 8
+        "y": 24
       },
       "hiddenSeries": false,
       "id": 14,
@@ -400,7 +730,7 @@
         "h": 8,
         "w": 8,
         "x": 9,
-        "y": 8
+        "y": 24
       },
       "hiddenSeries": false,
       "id": 10,
@@ -488,7 +818,7 @@
         "h": 8,
         "w": 7,
         "x": 17,
-        "y": 8
+        "y": 24
       },
       "hiddenSeries": false,
       "id": 16,
@@ -576,7 +906,7 @@
         "h": 8,
         "w": 9,
         "x": 0,
-        "y": 16
+        "y": 32
       },
       "hiddenSeries": false,
       "id": 4,
@@ -605,15 +935,15 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "current_bytes_write",
+          "expr": "current_bytes_write{database=~\"$database\"}",
           "interval": "",
-          "legendFormat": "Write",
+          "legendFormat": "Write for '{{database}}'",
           "refId": "A"
         },
         {
-          "expr": "current_bytes_read",
+          "expr": "current_bytes_read{database=~\"$database\"}",
           "interval": "",
-          "legendFormat": "Read",
+          "legendFormat": "Read for '{{database}}'",
           "refId": "B"
         }
       ],
@@ -670,7 +1000,7 @@
         "h": 8,
         "w": 8,
         "x": 9,
-        "y": 16
+        "y": 32
       },
       "hiddenSeries": false,
       "id": 5,
@@ -699,15 +1029,15 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(current_bytes_write[30s])",
+          "expr": "rate(current_bytes_write{database=~\"$database\"}[30s])",
           "interval": "",
-          "legendFormat": "Write",
+          "legendFormat": "Write for '{{database}}'",
           "refId": "A"
         },
         {
-          "expr": "rate(current_bytes_write[30s])",
+          "expr": "rate(current_bytes_write{database=~\"$database\"}[30s])",
           "interval": "",
-          "legendFormat": "Read",
+          "legendFormat": "Read for '{{database}}'",
           "refId": "B"
         }
       ],
@@ -764,7 +1094,7 @@
         "h": 8,
         "w": 7,
         "x": 17,
-        "y": 16
+        "y": 32
       },
       "hiddenSeries": false,
       "id": 22,
@@ -773,7 +1103,7 @@
         "current": false,
         "max": false,
         "min": false,
-        "show": false,
+        "show": true,
         "total": false,
         "values": false
       },
@@ -793,9 +1123,9 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "part_count",
+          "expr": "part_count{database=~\"$database\"}",
           "interval": "",
-          "legendFormat": "",
+          "legendFormat": "{{database}}",
           "refId": "A"
         }
       ],
@@ -852,7 +1182,7 @@
         "h": 8,
         "w": 9,
         "x": 0,
-        "y": 24
+        "y": 40
       },
       "hiddenSeries": false,
       "id": 7,
@@ -946,7 +1276,7 @@
         "h": 8,
         "w": 8,
         "x": 9,
-        "y": 24
+        "y": 40
       },
       "hiddenSeries": false,
       "id": 8,
@@ -1034,10 +1364,38 @@
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Prometheus",
+        "definition": "last_backup",
+        "hide": 0,
+        "includeAll": true,
+        "index": -1,
+        "label": null,
+        "multi": false,
+        "name": "database",
+        "options": [],
+        "query": "last_backup",
+        "refresh": 2,
+        "regex": "/database=\"([^\"]+)\"/",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
@@ -1060,5 +1418,5 @@
   "variables": {
     "list": []
   },
-  "version": 13
+  "version": 19
 }
