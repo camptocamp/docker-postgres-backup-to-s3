@@ -1,19 +1,14 @@
-import os
-
 import boto3
-
-from pg253.configuration import Configuration
 
 
 class ClientS3:
-    def __init__(self, key):
-
+    def __init__(self, config, key):
         self.client = boto3.client('s3',
-                                   endpoint_url=os.environ[Configuration.AWS_ENDPOINT],
-                                   aws_access_key_id=os.environ[Configuration.AWS_ACCESS_KEY_ID],
-                                   aws_secret_access_key=os.environ[Configuration.AWS_SECRET_ACCESS_KEY])
+                                   endpoint_url=config.aws_endpoint,
+                                   aws_access_key_id=config.aws_access_key_id,
+                                   aws_secret_access_key=config.aws_secret_access_key)
 
-        self.target = {'Bucket': os.environ[Configuration.AWS_S3_BUCKET],
+        self.target = {'Bucket': config.aws_s3_bucket,
                        'Key': key}
         multipart_upload = self.client.create_multipart_upload(**self.target)
         self.upload_id = multipart_upload['UploadId']

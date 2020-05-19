@@ -1,81 +1,49 @@
 import os
 
-
 class Configuration:
 
-    # Scheduling
-    # ----------
-    SCHEDULE = 'SCHEDULE'
+    CONFIG = {'SCHEDULE': '20 2 * * *',
+              'PROMETHEUS_EXPORTER_PORT': '9352',
+              'BUFFER_SIZE': str(10 * 1024 * 1024),
+              'PGHOST': None,
+              'PGUSER': None,
+              'PGPASSWORD': None,
+              'BLACKLISTED_DATABASES': '.*backup.*|postgres|rdsadmin',
+              'AWS_ENDPOINT': None,
+              'AWS_S3_BUCKET': None,
+              'AWS_ACCESS_KEY_ID': None,
+              'AWS_SECRET_ACCESS_KEY': None,
+              }
 
-    # Source configuration
-    # --------------------
-    PGHOST = 'PGHOST'
-    PGUSER = 'PGUSER'
-    PGPASSWORD = 'PGPASSWORD'
-    # Regexp for DB exclusion (DBs that match this regexp will not be backuped)
-    BLACKLISTED_DATABASES = 'BLACKLISTED_DATABASES'
+    def __getattribute__(self, obj):
+        if obj.upper() not in Configuration.CONFIG:
+            raise Exception('Unknown config key: %s' % obj)
+        # return value from env
+        if obj.upper() in os.environ:
+            return os.environ[obj.upper()]
+        # return default value
+        if Configuration.CONFIG[obj.upper()] is not None:
+            return Configuration.CONFIG[obj.upper()]
+        else:
+            raise Exception('Missing value for %s' % obj)
 
-    # Buffer configuration
-    # --------------------
-    BUFFER_SIZE = 'BUFFER_SIZE'
-
-    # Target configuration
-    # --------------------
-    # Size of upload part and internal buffer
-    AWS_ENDPOINT = 'AWS_ENDPOINT'
-    AWS_S3_BUCKET = 'AWS_S3_BUCKET'
-    AWS_ACCESS_KEY_ID = 'AWS_ACCESS_KEY_ID'
-    AWS_SECRET_ACCESS_KEY = 'AWS_SECRET_ACCESS_KEY'
-
-    # Exporter configuration
-    # ----------------------
-    PROMETHEUS_EXPORTER_PORT = 'PROMETHEUS_EXPORTER_PORT'
-
-    def __init__(self):
-        # Default value
-        self._setupDefault(Configuration.SCHEDULE, '20 2 * * *')
-        self._setupDefault(Configuration.PROMETHEUS_EXPORTER_PORT, 9352)
-        self._setupDefault(Configuration.BUFFER_SIZE, 10 * 1024 * 1024)  # 10MB
-
-        # Test configuration:
-        # Source configuration
-        self._setupDefault(Configuration.PGHOST, 'postgres')
-        self._setupDefault(Configuration.PGUSER, 'postgres')
-        self._setupDefault(Configuration.PGPASSWORD, 'pgpass')
-        self._setupDefault(Configuration.BLACKLISTED_DATABASES,
-                           ".*backup.*|postgres|rdsadmin")
-
-        # Target configuration
-        self._setupDefault(Configuration.AWS_ENDPOINT, 'http://localhost:9000')
-        self._setupDefault(Configuration.AWS_S3_BUCKET, 'postgres-to-s3')
-        self._setupDefault(Configuration.AWS_ACCESS_KEY_ID, 'AKIAACCESSKEY')
-        self._setupDefault(Configuration.AWS_SECRET_ACCESS_KEY, 'SECRETSECRET')
-
-
-    def _setupDefault(self, key, value):
-        os.environ[key] = os.getenv(key, str(value))
+    def __set__(self, obj, value):
+        setattr(obj, self.attr, value + ' unicorns')
 
     def __str__(self):
         res = ''
         res += "Source configuration:\n"
-        res += "\tHost : %s\n" % os.environ[Configuration.PGHOST]
-        res += "\tUser : %s\n" % os.environ[Configuration.PGUSER]
-        res += ("\tPassword : %s\n"
-                % ('X' * len(os.environ[Configuration.PGPASSWORD])))
-        res += ("\tBlacklisted DBs: %s\n"
-                % os.environ[Configuration.BLACKLISTED_DATABASES])
+        res += "\tHost : %s\n" % self.pghost
+        res += "\tUser : %s\n" % self.pguser
+        res += "\tPassword : %s\n" % ('X' * len(self.pgpassword))
+        res += "\tBlacklisted DBs: %s\n" % self.blacklisted_databases
         res += "Buffer configuration:\n"
-        res += ("\tBuffer size: %s\n"
-                % sizeof_fmt(os.environ[Configuration.BUFFER_SIZE]))
+        res += "\tBuffer size: %s\n" % sizeof_fmt(self.buffer_size)
         res += "Target configuration:\n"
-        res += ("\tEndpoint: %s\n"
-                % os.environ[Configuration.AWS_ENDPOINT])
-        res += ("\tBucket: %s\n"
-                % os.environ[Configuration.AWS_S3_BUCKET])
-        res += ("\tAccess Key: %s\n"
-                % os.environ[Configuration.AWS_ACCESS_KEY_ID])
-        res += ("\tSecret Key : %s\n"
-                % ('X' * len(os.environ[Configuration.AWS_SECRET_ACCESS_KEY])))
+        res += "\tEndpoint: %s\n" % self.aws_endpoint
+        res += "\tBucket: %s\n" % self.aws_s3_bucket
+        res += "\tAccess Key: %s\n" % self.aws_access_key_id
+        res += "\tSecret Key : %s\n" % ('X' * len(self.aws_secret_access_key))
         return res
 
 

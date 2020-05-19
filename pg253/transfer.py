@@ -1,22 +1,20 @@
 from subprocess import Popen, PIPE
-import os
 import datetime
 
 from pg253.clientS3 import ClientS3
-from pg253.configuration import Configuration
 
 
 class Transfer:
-    def __init__(self, database, metrics):
+    def __init__(self, config, database, metrics):
         self.database = database
         self.metrics = metrics
-        self.buffer_size = int(os.environ[Configuration.BUFFER_SIZE])
+        self.buffer_size = int(config.buffer_size)
         self.buffer = bytearray(self.buffer_size)
         now = datetime.datetime.now()
         self.key = ('postgres.%s.%s.dump'
                     % (database, now.strftime('%Y%m%d-%H%M')))
         print(self.key)
-        self.client = ClientS3(self.key)
+        self.client = ClientS3(config, self.key)
 
     def run(self):
         input_cmd = 'pg_dump -Fc -v -d %s' % self.database

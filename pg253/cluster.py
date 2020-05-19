@@ -1,19 +1,21 @@
 import re
-import os
 from subprocess import run
 
 from pg253.transfer import Transfer
-from pg253.configuration import Configuration
+
 
 class Cluster:
-    def __init__(self, metrics):
+    def __init__(self, config, metrics):
+        self.config = config
         self.metrics = metrics
-        self.db_exclude = re.compile(os.environ[Configuration.BLACKLISTED_DATABASES])
+        self.db_exclude = re.compile(config.blacklisted_databases)
         print("OK")
 
     def listDatabase(self):
         cmd = ['psql', '-qAtX', '-c', '"SELECT datname FROM pg_database"']
         res = run(cmd, capture_output=True)
+        if res.returncode != 0:
+            raise Exception('Unable to retrieve database list: %s' % res.stderr.decode())
         dbs = res.stdout.decode().strip().split("\n")
         dbs = list(filter(lambda x: not self.db_exclude.search(x), dbs))
         dbs.remove('template0')
@@ -22,6 +24,6 @@ class Cluster:
     def backup(self):
         for database in self.listDatabase():
             print("Begin backup of '%s' database" % database)
-            transfer = Transfer(database, self.metrics)
+            transfer = Transfer(self.config, database, self.metrics)
             transfer.run()
             print('End backup of %s' % database)

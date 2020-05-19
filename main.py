@@ -11,14 +11,13 @@ from pg253.configuration import Configuration
 def main():
     config = Configuration()
     print(config)
-    metrics = Metrics()
-    cluster = Cluster(metrics)
+    metrics = Metrics(config)
+    cluster = Cluster(config, metrics)
     print(cluster.listDatabase())
 
     # Start scheduler
     scheduler = BlockingScheduler()
-    scheduler.add_job(cluster.backup,
-                      CronTrigger.from_crontab(os.environ[Configuration.SCHEDULE]))
+    scheduler.add_job(cluster.backup, CronTrigger.from_crontab(config.schedule))
     #scheduler.add_job(cluster.backup, 'interval', seconds=3)
     try:
         scheduler.start()

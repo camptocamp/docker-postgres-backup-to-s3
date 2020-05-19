@@ -1,18 +1,15 @@
-import os
-
 from prometheus_client import start_http_server
 from prometheus_client import Gauge, Counter
 
-from pg253.configuration import Configuration
-
 
 class Metrics:
-    def __init__(self):
+    def __init__(self, config):
+        self.config = config
         self.current_read = 0
         self.current_write = 0
 
         # Start and configure prometheus exporter
-        start_http_server(int(os.environ[Configuration.PROMETHEUS_EXPORTER_PORT]))
+        start_http_server(int(config.prometheus_exporter_port))
 
         self.total_bytes_read = (
             Counter('total_bytes_read',
